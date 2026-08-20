@@ -1,0 +1,43 @@
+/* PR Commit Tracker - styles for injected checkboxes and the header badge. */
+
+.ct-review-checkbox {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 0 8px 0 0;
+  vertical-align: middle;
+  cursor: pointer;
+  accent-color: var(--fgColor-accent, var(--color-accent-fg, #0969da));
+}
+
+.ct-review-checkbox:focus-visible {
+  outline: 2px solid var(--fgColor-accent, var(--color-accent-fg, #0969da));
+  outline-offset: 2px;
+}
+
+.ct-review-badge {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 0 8px;
+  padding: 2px 10px;
+  border: 1px solid var(--borderColor-default, var(--color-border-default, #d0d7de));
+  border-radius: 2em;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 20px;
+  white-space: nowrap;
+  color: var(--fgColor-muted, var(--color-fg-muted, #57606a));
+  background-color: var(--bgColor-muted, var(--color-canvas-subtle, #f6f8fa));
+}
+
+.ct-review-badge[data-state="partial"] {
+  color: var(--fgColor-accent, var(--color-accent-fg, #0969da));
+  border-color: var(--borderColor-accent-muted, var(--color-accent-muted, #54aeff));
+  background-color: var(--bgColor-accent-muted, var(--color-accent-subtle, #ddf4ff));
+}
+
+.ct-review-badge[data-state="complete"] {
+  color: var(--fgColor-success, var(--color-success-fg, #1a7f37));
+  border-color: var(--borderColor-success-muted, var(--color-success-muted, #4ac26b));
+  background-color: var(--bgColor-success-muted, var(--color-success-subtle, #dafbe1));
+}

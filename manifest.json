@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "PR Commit Tracker",
+  "version": "1.0.0",
+  "description": "Track which commits you have already reviewed on a GitHub pull request.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://github.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/*/*/pull/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "PR Commit Tracker",
+    "default_popup": "popup.html"
+  }
+}
