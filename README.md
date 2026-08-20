@@ -11,8 +11,12 @@ Reviewed: 3/10 (30%)
 ## Features
 
 - **Per-commit checkboxes** on the PR `Commits` tab and on commit rows in the
-  `Conversation` timeline.
-- **Header badge** showing reviewed / total commits and a percentage.
+  `Conversation` timeline, placed to the right of the commit hash link. Commits merely
+  *referenced* inside a comment body are ignored, so they never count as commits.
+- **Header badge** showing reviewed / total commits and a percentage, rendered next to
+  the PR tabs (falling back to the branch line next to the copy icon). The total comes
+  from GitHub's own `Commits` tab counter, so it stays correct even on the Conversation
+  tab where only some commit rows are rendered.
 - **Persistent progress** via `chrome.storage.local` — survives refreshes and
   navigation.
 - **Per-PR isolation** — every pull request has its own storage key.
@@ -61,11 +65,21 @@ The stored value is:
 ```
 
 - `shas` — commit SHAs you marked as reviewed.
-- `total` — the number of commit rows last seen on the page, so the popup can show
-  progress without reading the page DOM.
+- `total` — the PR's commit count, read from GitHub's `Commits` tab counter (falling
+  back to the number of commit rows on the page only when that counter is missing), so
+  the popup can show progress without the page DOM.
+
+Stale SHAs — left behind by a rebase or force-push — are pruned only when every commit
+of the PR is rendered on screen. While you are looking at a partial view, commits you
+cannot see keep their reviewed state.
 
 Because state is keyed by **commit SHA**, the same commit stays in sync between the
-Commits tab and the Conversation timeline.
+Commits tab, the Conversation timeline, and the single-commit view.
+
+GitHub serves the single-commit view of a PR under two URL shapes — `/pull/{id}/commits/{sha}`
+(classic) and `/pull/{id}/changes/{sha}` (newer PR experience). Both are recognised. On that
+page you can tick the **Reviewed** checkbox *or* click **Next**; either marks the commit, and
+the PR page reflects it.
 
 ## File layout
 
@@ -85,7 +99,8 @@ a bundler, so the two small helpers are intentionally standalone.
 
 - **No checkboxes or badge appear.** Reload the tab. If it still fails, GitHub may
   have changed its markup — `content.js` matches rows through a fallback chain of
-  selectors defined in `COMMIT_ROW_SELECTORS` / `ROW_ANCESTOR_SELECTORS`.
+  selectors defined in `COMMIT_ROW_SELECTORS` / `ROW_ANCESTOR_SELECTORS`, the total via
+  `COMMIT_TOTAL_SELECTORS`, and the badge host via `HEADER_SELECTORS`.
 - **Progress looks reset.** Confirm the URL is still the same PR; the storage key is
   built from `owner`, `repo`, and the PR number.
 - **After a force-push, commits show as unreviewed.** Expected — a rebase creates new
@@ -93,8 +108,10 @@ a bundler, so the two small helpers are intentionally standalone.
 
 ## Known limitations
 
-- On very large PRs GitHub paginates the commit list; the badge counts the commit rows
-  currently rendered, not the PR's absolute commit total.
+- On very large PRs GitHub caps and paginates the commit list. The badge's total still
+  comes from GitHub's counter, but you can only tick the commits currently rendered.
+- If GitHub's commit counter cannot be found, the total falls back to the number of
+  commit rows on the page.
 - The extension depends on GitHub's DOM structure and can need selector updates when
   GitHub redesigns the PR pages.
 
