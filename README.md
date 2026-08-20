@@ -90,10 +90,33 @@ the PR page reflects it.
 | `styles.css`    | Styles for the injected checkboxes and the header badge            |
 | `popup.html`    | Popup markup and styles                                            |
 | `popup.js`      | Popup status rendering and the reset action                        |
+| `icons/`        | Extension icons at 16, 48, and 128 px                              |
 
 `content.js` and `popup.js` each keep their own copy of the storage-key helper: the
 content script and the popup run in separate contexts and the extension ships without
 a bundler, so the two small helpers are intentionally standalone.
+
+## Packaging for the Chrome Web Store
+
+`manifest.json` must sit at the **root** of the zip, so archive the folder's contents
+rather than the folder itself:
+
+```bash
+cd /path/to/CommitTracker
+zip -rq ../commit-tracker-1.0.0.zip . -x '.git/*' '.gitignore' 'STORE_LISTING.md' '*.DS_Store'
+```
+
+Verify with `unzip -l ../commit-tracker-1.0.0.zip` — `manifest.json` should appear
+without a directory prefix. Then upload the zip at
+<https://chrome.google.com/webstore/devconsole> (a one-time $5 developer registration
+fee applies to the account).
+
+`chrome://extensions → Pack extension` produces a `.crx` for self-hosting and is **not**
+what the store accepts.
+
+Bump `version` in `manifest.json` before every upload; a previously used version is
+rejected. See `STORE_LISTING.md` for the listing text, permission justifications, and
+privacy answers.
 
 ## Troubleshooting
 
